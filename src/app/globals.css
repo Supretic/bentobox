@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background: #f3f0ea;
+  color: oklch(0.20 0.012 50);
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+select,
+button,
+textarea {
+  font-family: inherit;
+}
+
+.rice-grain {
+  background-image:
+    radial-gradient(ellipse 2px 3px at 10% 20%, rgba(0,0,0,0.07), transparent 70%),
+    radial-gradient(ellipse 2px 3px at 40% 60%, rgba(0,0,0,0.06), transparent 70%),
+    radial-gradient(ellipse 2px 3px at 75% 30%, rgba(0,0,0,0.07), transparent 70%),
+    radial-gradient(ellipse 2px 3px at 30% 85%, rgba(0,0,0,0.06), transparent 70%),
+    radial-gradient(ellipse 2px 3px at 85% 75%, rgba(0,0,0,0.07), transparent 70%),
+    radial-gradient(ellipse 2px 3px at 55% 15%, rgba(0,0,0,0.06), transparent 70%);
+  background-size: 18px 24px;
+}
+
+.ume {
+  background: radial-gradient(circle at 35% 35%, oklch(0.7 0.20 25), oklch(0.58 0.18 25) 60%, oklch(0.48 0.20 25));
+  box-shadow: 0 4px 12px -2px rgba(200,48,44,0.5), inset -3px -4px 6px rgba(0,0,0,0.15);
+  position: relative;
+}
+.ume::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 70% 65%, rgba(255,255,255,0) 60%, rgba(0,0,0,0.08) 100%);
+}
+
+.thumb-placeholder {
+  background:
+    linear-gradient(135deg,
+      oklch(0.65 0.14 30) 0 33%,
+      oklch(0.85 0.08 90) 33% 66%,
+      oklch(0.6 0.10 150) 66%);
+  position: relative;
+}
+.thumb-placeholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 2px 3px at 50% 50%, rgba(255,255,255,0.4), transparent 70%);
+  background-size: 8px 12px;
+  opacity: 0.4;
+}
