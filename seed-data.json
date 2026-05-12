@@ -1,0 +1,32 @@
+{
+  "_notes": "Macros sourced from USDA FoodData Central, per 100g of raw/dry ingredient. Verify against actual package labels — branded products vary.",
+  "proteins": [
+    {"name": "Chicken Breast (boneless skinless)", "category": "poultry", "kcal_per_100g": 165, "protein_g_per_100g": 31,   "carb_g_per_100g": 0,    "fat_g_per_100g": 3.6,  "shelf_life_days": 4},
+    {"name": "Chicken Thighs (boneless skinless)", "category": "poultry", "kcal_per_100g": 209, "protein_g_per_100g": 26,   "carb_g_per_100g": 0,    "fat_g_per_100g": 11,   "shelf_life_days": 4},
+    {"name": "Ground Beef (93/7)",                 "category": "beef",    "kcal_per_100g": 152, "protein_g_per_100g": 21.4, "carb_g_per_100g": 0,    "fat_g_per_100g": 7,    "shelf_life_days": 3},
+    {"name": "Ground Beef (80/20)",                "category": "beef",    "kcal_per_100g": 254, "protein_g_per_100g": 17,   "carb_g_per_100g": 0,    "fat_g_per_100g": 20,   "shelf_life_days": 3},
+    {"name": "Ground Turkey (93/7)",               "category": "poultry", "kcal_per_100g": 150, "protein_g_per_100g": 19.7, "carb_g_per_100g": 0,    "fat_g_per_100g": 7.4,  "shelf_life_days": 3},
+    {"name": "Salmon (Atlantic, raw)",             "category": "fish",    "kcal_per_100g": 208, "protein_g_per_100g": 20,   "carb_g_per_100g": 0,    "fat_g_per_100g": 13,   "shelf_life_days": 2},
+    {"name": "Tilapia (raw)",                      "category": "fish",    "kcal_per_100g": 96,  "protein_g_per_100g": 20,   "carb_g_per_100g": 0,    "fat_g_per_100g": 1.7,  "shelf_life_days": 2},
+    {"name": "Shrimp (raw)",                       "category": "fish",    "kcal_per_100g": 99,  "protein_g_per_100g": 24,   "carb_g_per_100g": 0.2,  "fat_g_per_100g": 0.3,  "shelf_life_days": 2},
+    {"name": "Pork Tenderloin",                    "category": "pork",    "kcal_per_100g": 143, "protein_g_per_100g": 26,   "carb_g_per_100g": 0,    "fat_g_per_100g": 3.5,  "shelf_life_days": 4},
+    {"name": "Sirloin Steak",                      "category": "beef",    "kcal_per_100g": 206, "protein_g_per_100g": 28,   "carb_g_per_100g": 0,    "fat_g_per_100g": 9,    "shelf_life_days": 4},
+    {"name": "Eggs (large, whole)",                "category": "egg",     "kcal_per_100g": 155, "protein_g_per_100g": 13,   "carb_g_per_100g": 1.1,  "fat_g_per_100g": 11,   "shelf_life_days": 28},
+    {"name": "Cottage Cheese (2% milkfat)",        "category": "dairy",   "kcal_per_100g": 84,  "protein_g_per_100g": 11,   "carb_g_per_100g": 4.3,  "fat_g_per_100g": 2.3,  "shelf_life_days": 10},
+    {"name": "Oikos Pro (plain, 5.3oz cup)",       "category": "dairy",   "kcal_per_100g": 87,  "protein_g_per_100g": 13.3, "carb_g_per_100g": 5.3,  "fat_g_per_100g": 0,    "shelf_life_days": 14},
+    {"name": "Lamb Loin Chops (raw, lean + fat)",  "category": "lamb",    "kcal_per_100g": 232, "protein_g_per_100g": 19,   "carb_g_per_100g": 0,    "fat_g_per_100g": 17,   "shelf_life_days": 3}
+  ],
+  "carbs": [
+    {"name": "Jasmine Rice (dry)",            "type": "rice",          "kcal_per_100g_dry": 357, "protein_g_per_100g_dry": 7.1,  "carb_g_per_100g_dry": 80, "fat_g_per_100g_dry": 0.6},
+    {"name": "Long-Grain White Rice (dry)",   "type": "rice",          "kcal_per_100g_dry": 365, "protein_g_per_100g_dry": 7.1,  "carb_g_per_100g_dry": 80, "fat_g_per_100g_dry": 0.7},
+    {"name": "Brown Rice (dry)",              "type": "rice",          "kcal_per_100g_dry": 370, "protein_g_per_100g_dry": 7.9,  "carb_g_per_100g_dry": 77, "fat_g_per_100g_dry": 2.9},
+    {"name": "Basmati Rice (dry)",            "type": "rice",          "kcal_per_100g_dry": 350, "protein_g_per_100g_dry": 8.5,  "carb_g_per_100g_dry": 78, "fat_g_per_100g_dry": 0.8},
+    {"name": "Barilla Protein+ Penne (dry)",  "type": "protein-pasta", "kcal_per_100g_dry": 360, "protein_g_per_100g_dry": 17,   "carb_g_per_100g_dry": 64, "fat_g_per_100g_dry": 3},
+    {"name": "Banza Chickpea Pasta (dry)",    "type": "protein-pasta", "kcal_per_100g_dry": 333, "protein_g_per_100g_dry": 23,   "carb_g_per_100g_dry": 57, "fat_g_per_100g_dry": 5},
+    {"name": "Whole Wheat Pasta (dry)",       "type": "pasta",         "kcal_per_100g_dry": 348, "protein_g_per_100g_dry": 14,   "carb_g_per_100g_dry": 71, "fat_g_per_100g_dry": 2.5}
+  ],
+  "veggies": [
+    {"name": "Broccoli (raw)",  "kcal_per_100g": 34, "protein_g_per_100g": 2.8, "carb_g_per_100g": 7,   "fat_g_per_100g": 0.4, "shelf_life_days": 7},
+    {"name": "Asparagus (raw)", "kcal_per_100g": 20, "protein_g_per_100g": 2.2, "carb_g_per_100g": 3.9, "fat_g_per_100g": 0.1, "shelf_life_days": 5}
+  ]
+}
