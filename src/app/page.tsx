@@ -33,10 +33,34 @@ export default async function Home() {
   const now = new Date();
   const stamp = dateStamp(now);
 
-  const pantryCount = 0;
-  const lowCount = 0;
-  const trendItem = "—";
-  const trendDelta = "";
+  // Live pantry stats
+  const { data: pantryRows } = await supabase
+    .from("pantry")
+    .select("remaining_g")
+    .gt("remaining_g", 0);
+  const pantryCount = pantryRows?.length ?? 0;
+  const lowCount = pantryRows?.filter((r) => r.remaining_g < 100)?.length ?? 0;
+
+  // Latest price trend
+  const { data: trendRows } = await supabase
+    .from("price_per_g")
+    .select("item_id, cents_per_g")
+    .eq("user_id", user.id)
+    .eq("item_type", "protein")
+    .order("cents_per_g", { ascending: true })
+    .limit(1);
+  let trendItem = "—";
+  let trendDelta = "";
+  if (trendRows && trendRows.length > 0) {
+    const { data: pName } = await supabase
+      .from("proteins")
+      .select("name")
+      .eq("id", trendRows[0].item_id)
+      .single();
+    trendItem = pName?.name?.split("(")[0]?.trim() ?? "—";
+    trendDelta = `${trendRows[0].cents_per_g.toFixed(2)}¢/g`;
+  }
+
   const pick = null as null | { name: string; ingredients: string };
 
   return (
