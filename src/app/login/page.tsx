@@ -44,12 +44,31 @@ export default function Login() {
         </div>
 
         {sent ? (
-          <div className="p-4 rounded-[8px] bg-rice text-lacquer border-l-4 border-tare">
-            <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-tare opacity-80">
-              link sent
+          <div>
+            <div className="p-4 rounded-[8px] bg-rice text-lacquer border-l-4 border-tare">
+              <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-tare opacity-80">
+                link sent
+              </div>
+              <div className="font-serif text-[20px] leading-[1.1] mt-1 tracking-[-0.01em]">
+                Check <em className="italic">{email}</em> — your magic link is waiting.
+              </div>
             </div>
-            <div className="font-serif text-[20px] leading-[1.1] mt-1 tracking-[-0.01em]">
-              Check <em className="italic">{email}</em> — your magic link is waiting.
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="flex-1 p-3 rounded-full bg-lacquer-inner text-rice font-semibold text-[12px] hover:brightness-125 transition border border-rice/10"
+              >
+                I clicked it — refresh →
+              </button>
+              <button
+                onClick={() => {
+                  setSent(false);
+                  setError(null);
+                }}
+                className="px-4 p-3 rounded-full text-rice/60 text-[12px] hover:text-rice transition"
+              >
+                Resend
+              </button>
             </div>
           </div>
         ) : (

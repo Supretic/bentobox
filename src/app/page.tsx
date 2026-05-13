@@ -27,7 +27,9 @@ export default async function Home() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const firstName = (user.email?.split("@")[0] ?? "you").toLowerCase();
+  const nickname = user.user_metadata?.nickname;
+  if (!nickname) redirect("/setup");
+  const firstName = nickname;
   const now = new Date();
   const stamp = dateStamp(now);
 
@@ -155,8 +157,9 @@ export default async function Home() {
             </div>
           </a>
 
-          <div
-            className="relative overflow-hidden rounded-[8px] bg-nori text-rice flex items-center gap-[14px] p-[14px_16px]"
+          <a
+            href="/meals"
+            className="relative overflow-hidden rounded-[8px] bg-nori text-rice flex items-center gap-[14px] p-[14px_16px] transition-transform hover:-translate-y-0.5"
             style={{ gridColumn: "1 / span 2", gridRow: 3 }}
           >
             <div
@@ -175,13 +178,10 @@ export default async function Home() {
                 {pick?.ingredients ?? "your pantry is empty"}
               </div>
             </div>
-            <button
-              className="bg-tare text-rice border-none px-[14px] py-[10px] rounded-full font-body font-semibold text-[12px] cursor-pointer whitespace-nowrap shadow-cook disabled:opacity-50"
-              disabled={!pick}
-            >
+            <div className="bg-tare text-rice px-[14px] py-[10px] rounded-full font-body font-semibold text-[12px] whitespace-nowrap shadow-cook">
               Cook this →
-            </button>
-          </div>
+            </div>
+          </a>
         </div>
       </div>
     </div>
