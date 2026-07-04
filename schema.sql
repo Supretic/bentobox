@@ -92,6 +92,7 @@ create table if not exists meals (
   default_protein_g int default 170,
   default_carb_g int default 75,
   default_veggie_g int default 150,
+  source text not null default 'curated', -- 'curated' (hand-written) or 'generated' (template engine)
   generated_at timestamptz default now(),
   unique(carb_id, protein_id, veggie_id, name)
 );

@@ -10,7 +10,6 @@
     "generate-meals": "tsx --env-file=.env.local scripts/generate-meal-catalog.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.30.0",
     "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.45.0",
     "next": "^15.0.0",

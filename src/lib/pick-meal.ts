@@ -41,28 +41,36 @@ export async function pickMealFromPantry(
   const veggieIds = ids("veggie");
   if (proteinIds.length === 0 || veggieIds.length === 0) return null;
 
-  const { data } = await supabase
+  // Sample from ids only — the catalog is thousands of rows, so fetching
+  // full recipes for every candidate would be wasteful.
+  const { data: idRows } = await supabase
+    .from("meals")
+    .select("id, carb_id")
+    .in("protein_id", proteinIds)
+    .in("veggie_id", veggieIds)
+    .order("id")
+    .limit(5000);
+
+  const candidates = (idRows ?? []).filter(
+    (m) => m.carb_id === null || carbIds.includes(m.carb_id)
+  );
+  if (candidates.length === 0) return null;
+
+  const idx =
+    seed === undefined
+      ? Math.floor(Math.random() * candidates.length)
+      : seed % candidates.length;
+
+  const { data: meal } = await supabase
     .from("meals")
     .select(
       `id, name, recipe_text, prep_minutes, vibe_tags, meal_type,
        default_protein_g, default_carb_g, default_veggie_g,
        protein_id, carb_id, veggie_id`
     )
-    .in("protein_id", proteinIds)
-    .in("veggie_id", veggieIds)
-    .order("id")
-    .limit(50);
-
-  const meals = (data ?? []).filter(
-    (m) => m.carb_id === null || carbIds.includes(m.carb_id)
-  );
-  if (meals.length === 0) return null;
-
-  const idx =
-    seed === undefined
-      ? Math.floor(Math.random() * meals.length)
-      : seed % meals.length;
-  const meal = meals[idx];
+    .eq("id", candidates[idx].id)
+    .single();
+  if (!meal) return null;
 
   const itemIds = [meal.protein_id, meal.carb_id, meal.veggie_id].filter(Boolean);
   const [p, c, v] = await Promise.all([
