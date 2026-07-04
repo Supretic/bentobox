@@ -93,6 +93,18 @@ If the combo is awkward (e.g. yogurt + pasta + asparagus), still write a service
   return JSON.parse(jsonMatch[0]) as Recipe;
 }
 
+function pick<T>(arr: T[], n: number): T[] {
+  const copy = [...arr];
+  const out: T[] = [];
+  while (out.length < n && copy.length > 0) {
+    const i = Math.floor(Math.random() * copy.length);
+    out.push(copy.splice(i, 1)[0]);
+  }
+  return out;
+}
+
+const COMBOS_PER_PROTEIN = 5;
+
 async function run() {
   const cat = await fetchCatalogs();
 
@@ -101,53 +113,52 @@ async function run() {
   let failed = 0;
 
   for (const protein of cat.proteins) {
-    for (const veggie of cat.veggies) {
-      const carbOptions: (Catalog["carbs"][0] | null)[] = [...cat.carbs, null];
+    const veggies = pick(cat.veggies, COMBOS_PER_PROTEIN);
 
-      for (const carb of carbOptions) {
-        const key = `${protein.id}|${carb?.id ?? "null"}|${veggie.id}`;
-        if (cat.existing.has(key)) {
-          skipped++;
-          continue;
-        }
+    for (const veggie of veggies) {
+      const carb = Math.random() > 0.3 ? pick(cat.carbs, 1)[0] : null;
+      const key = `${protein.id}|${carb?.id ?? "null"}|${veggie.id}`;
+      if (cat.existing.has(key)) {
+        skipped++;
+        continue;
+      }
 
-        const label = `${protein.name} + ${carb?.name ?? "no carb"} + ${veggie.name}`;
-        try {
-          process.stdout.write(`Generating: ${label}… `);
-          const recipe = await generateRecipe(protein, carb, veggie);
+      const label = `${protein.name} + ${carb?.name ?? "no carb"} + ${veggie.name}`;
+      try {
+        process.stdout.write(`[${created + 1}] ${label}… `);
+        const recipe = await generateRecipe(protein, carb, veggie);
 
-          const { error } = await supabase.from("meals").insert({
-            protein_id: protein.id,
-            carb_id: carb?.id ?? null,
-            veggie_id: veggie.id,
-            name: recipe.name,
-            recipe_text: recipe.recipe_text,
-            prep_minutes: recipe.prep_minutes,
-            vibe_tags: recipe.vibe_tags,
-            meal_type: recipe.meal_type,
-            default_protein_g: 170,
-            default_carb_g: carb ? 75 : 0,
-            default_veggie_g: 150,
-          });
+        const { error } = await supabase.from("meals").insert({
+          protein_id: protein.id,
+          carb_id: carb?.id ?? null,
+          veggie_id: veggie.id,
+          name: recipe.name,
+          recipe_text: recipe.recipe_text,
+          prep_minutes: recipe.prep_minutes,
+          vibe_tags: recipe.vibe_tags,
+          meal_type: recipe.meal_type,
+          default_protein_g: 170,
+          default_carb_g: carb ? 75 : 0,
+          default_veggie_g: 150,
+        });
 
-          if (error) {
-            console.log(`insert error: ${error.message}`);
-            failed++;
-          } else {
-            console.log("ok");
-            created++;
-          }
-
-          await new Promise((r) => setTimeout(r, 400));
-        } catch (e: any) {
-          console.log(`error: ${e.message}`);
+        if (error) {
+          console.log(`insert error: ${error.message}`);
           failed++;
+        } else {
+          console.log("ok");
+          created++;
         }
+
+        await new Promise((r) => setTimeout(r, 300));
+      } catch (e: any) {
+        console.log(`error: ${e.message}`);
+        failed++;
       }
     }
   }
 
-  console.log(`\nDone. Created: ${created} | Skipped (already existed): ${skipped} | Failed: ${failed}`);
+  console.log(`\nDone. Created: ${created} | Skipped: ${skipped} | Failed: ${failed}`);
 }
 
 run().catch((e) => {
