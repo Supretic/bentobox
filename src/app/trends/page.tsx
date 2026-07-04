@@ -1,19 +1,15 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { DEV_USER_ID } from "@/lib/dev-user";
 import { Sparkline } from "@/components/Sparkline";
 
 export default async function TrendsPage() {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
   // Fetch all protein price data for this user
   const { data: priceData } = await supabase
     .from("price_per_g")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", DEV_USER_ID)
     .eq("item_type", "protein");
 
   // Fetch protein names

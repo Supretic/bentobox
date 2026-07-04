@@ -1,6 +1,7 @@
 "use server";
 
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { DEV_USER_ID } from "@/lib/dev-user";
 import { revalidatePath } from "next/cache";
 
 export async function logMealEaten(
@@ -10,13 +11,9 @@ export async function logMealEaten(
   veggieG: number
 ): Promise<{ ok?: true; error?: string }> {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in." };
 
   const { error } = await supabase.from("meal_logs").insert({
-    user_id: user.id,
+    user_id: DEV_USER_ID,
     meal_id: mealId,
     portions: 1,
     protein_g_used: proteinG,
@@ -27,7 +24,6 @@ export async function logMealEaten(
   if (error) return { error: error.message };
 
   revalidatePath("/pantry");
-  revalidatePath("/meals");
   revalidatePath("/");
 
   return { ok: true };

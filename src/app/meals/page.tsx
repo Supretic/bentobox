@@ -1,73 +1,10 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { pickMealFromPantry } from "@/lib/pick-meal";
 import { MealCard } from "./meal-card";
 
 export default async function MealsPage() {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  // Get pantry items with enough stock for a meal
-  const { data: pantryItems } = await supabase
-    .from("pantry")
-    .select("item_type, item_id, remaining_g")
-    .gt("remaining_g", 10);
-
-  const pantryProteinIds = (pantryItems ?? [])
-    .filter((p) => p.item_type === "protein")
-    .map((p) => p.item_id);
-  const pantryCarbIds = (pantryItems ?? [])
-    .filter((p) => p.item_type === "carb")
-    .map((p) => p.item_id);
-  const pantryVeggieIds = (pantryItems ?? [])
-    .filter((p) => p.item_type === "veggie")
-    .map((p) => p.item_id);
-
-  // Find meals that match what's in the pantry
-  let meals: any[] = [];
-  if (pantryProteinIds.length > 0 && pantryVeggieIds.length > 0) {
-    const { data } = await supabase
-      .from("meals")
-      .select(
-        `id, name, recipe_text, prep_minutes, vibe_tags, meal_type,
-         default_protein_g, default_carb_g, default_veggie_g,
-         protein_id, carb_id, veggie_id`
-      )
-      .in("protein_id", pantryProteinIds)
-      .in("veggie_id", pantryVeggieIds)
-      .limit(20);
-
-    // Filter for carb match (carb_id is nullable — null means no carb needed)
-    meals = (data ?? []).filter(
-      (m: any) => m.carb_id === null || pantryCarbIds.includes(m.carb_id)
-    );
-  }
-
-  // Fetch ingredient names for display
-  const allItemIds = [
-    ...new Set(
-      meals.flatMap((m: any) =>
-        [m.protein_id, m.carb_id, m.veggie_id].filter(Boolean)
-      )
-    ),
-  ];
-
-  const nameMap = new Map<string, string>();
-  if (allItemIds.length > 0) {
-    const [p, c, v] = await Promise.all([
-      supabase.from("proteins").select("id, name").in("id", allItemIds),
-      supabase.from("carbs").select("id, name").in("id", allItemIds),
-      supabase.from("veggies").select("id, name").in("id", allItemIds),
-    ]);
-    for (const row of [...(p.data ?? []), ...(c.data ?? []), ...(v.data ?? [])]) {
-      nameMap.set(row.id, row.name);
-    }
-  }
-
-  // Pick a random meal to show
-  const pick = meals.length > 0 ? meals[Math.floor(Math.random() * meals.length)] : null;
+  const pick = await pickMealFromPantry(supabase);
 
   return (
     <div className="min-h-screen bg-lacquer text-rice">
@@ -98,10 +35,10 @@ export default async function MealsPage() {
 
         {pick ? (
           <MealCard
-            meal={pick}
-            proteinName={nameMap.get(pick.protein_id) ?? "Protein"}
-            carbName={pick.carb_id ? nameMap.get(pick.carb_id) ?? "Carb" : null}
-            veggieName={nameMap.get(pick.veggie_id) ?? "Veggie"}
+            meal={pick.meal}
+            proteinName={pick.proteinName}
+            carbName={pick.carbName}
+            veggieName={pick.veggieName}
           />
         ) : (
           <div className="p-5 rounded-[14px] bg-lacquer-inner text-rice/50 text-center">

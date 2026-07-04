@@ -1,6 +1,7 @@
 "use server";
 
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { DEV_USER_ID } from "@/lib/dev-user";
 import { ozToG, dollarsToCents } from "@/lib/macros";
 import { revalidatePath } from "next/cache";
 
@@ -25,16 +26,12 @@ export async function addPurchase(
     return { error: "Price must be a positive number." };
 
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not signed in." };
 
   const amount_g = input.unit === "oz" ? ozToG(input.amount) : input.amount;
   const total_price_cents = dollarsToCents(input.price_dollars);
 
   const { error: insertError } = await supabase.from("purchases").insert({
-    user_id: user.id,
+    user_id: DEV_USER_ID,
     item_type: input.item_type,
     item_id: input.item_id,
     store: input.store,
@@ -49,6 +46,7 @@ export async function addPurchase(
   const { data: pantryRow } = await supabase
     .from("pantry")
     .select("remaining_g")
+    .eq("user_id", DEV_USER_ID)
     .eq("item_type", input.item_type)
     .eq("item_id", input.item_id)
     .maybeSingle();

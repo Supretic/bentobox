@@ -1,5 +1,6 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { DEV_USER_ID, DEV_NICKNAME } from "@/lib/dev-user";
+import { pickMealFromPantry } from "@/lib/pick-meal";
 import { Sparkline } from "@/components/Sparkline";
 
 function greeting(d: Date) {
@@ -22,14 +23,7 @@ function dateStamp(d: Date) {
 
 export default async function Home() {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const nickname = user.user_metadata?.nickname;
-  if (!nickname) redirect("/setup");
-  const firstName = nickname;
+  const firstName = DEV_NICKNAME;
   const now = new Date();
   const stamp = dateStamp(now);
 
@@ -37,6 +31,7 @@ export default async function Home() {
   const { data: pantryRows } = await supabase
     .from("pantry")
     .select("remaining_g")
+    .eq("user_id", DEV_USER_ID)
     .gt("remaining_g", 0);
   const pantryCount = pantryRows?.length ?? 0;
   const lowCount = pantryRows?.filter((r) => r.remaining_g < 100)?.length ?? 0;
@@ -45,7 +40,7 @@ export default async function Home() {
   const { data: trendRows } = await supabase
     .from("price_per_g")
     .select("item_id, cents_per_g")
-    .eq("user_id", user.id)
+    .eq("user_id", DEV_USER_ID)
     .eq("item_type", "protein")
     .order("cents_per_g", { ascending: true })
     .limit(1);
@@ -61,7 +56,24 @@ export default async function Home() {
     trendDelta = `${trendRows[0].cents_per_g.toFixed(2)}¢/g`;
   }
 
-  const pick = null as null | { name: string; ingredients: string };
+  // Day-seeded so the tile shows the same "tonight's pick" all day.
+  const dayOfYear = Math.floor(
+    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000
+  );
+  const pickResult = await pickMealFromPantry(supabase, dayOfYear);
+  const pick = pickResult
+    ? {
+        name: pickResult.meal.name,
+        ingredients: [
+          pickResult.proteinName,
+          pickResult.carbName,
+          pickResult.veggieName,
+        ]
+          .filter((n): n is string => n !== null)
+          .map((n) => n.split("(")[0].trim())
+          .join(" · "),
+      }
+    : null;
 
   return (
     <div className="min-h-screen bg-lacquer text-rice">
@@ -167,8 +179,8 @@ export default async function Home() {
               <Sparkline color="oklch(0.30 0.04 60)" />
             </div>
             <div
-              className="absolute text-[11px] opacity-60"
-              style={{ bottom: 14, left: 18 }}
+              className="absolute text-[11px] opacity-60 leading-[1.35]"
+              style={{ bottom: 14, left: 18, right: 60 }}
             >
               {trendDelta ? (
                 <>

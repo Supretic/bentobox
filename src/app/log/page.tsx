@@ -1,13 +1,8 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { LogForm } from "./log-form";
 
 export default async function LogPage() {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
   const [proteinsRes, carbsRes, veggiesRes] = await Promise.all([
     supabase.from("proteins").select("id, name, protein_g_per_100g").order("name"),

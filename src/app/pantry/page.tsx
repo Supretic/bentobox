@@ -1,18 +1,15 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { DEV_USER_ID } from "@/lib/dev-user";
 import { centsPerGramProtein, gToOz, formatDollars } from "@/lib/macros";
 
 export default async function PantryPage() {
   const supabase = await createSupabaseServer();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
 
   // Fetch pantry items with their catalog info and price data
   const { data: pantryItems } = await supabase
     .from("pantry")
     .select("item_type, item_id, remaining_g, last_purchase_date")
+    .eq("user_id", DEV_USER_ID)
     .order("last_purchase_date", { ascending: false });
 
   // Fetch catalog data for name lookups
@@ -20,7 +17,7 @@ export default async function PantryPage() {
     supabase.from("proteins").select("id, name, protein_g_per_100g"),
     supabase.from("carbs").select("id, name, protein_g_per_100g_dry"),
     supabase.from("veggies").select("id, name, protein_g_per_100g"),
-    supabase.from("price_per_g").select("*").eq("user_id", user.id),
+    supabase.from("price_per_g").select("*").eq("user_id", DEV_USER_ID),
   ]);
 
   const catalogMap = new Map<string, { name: string; proteinPer100g: number }>();
